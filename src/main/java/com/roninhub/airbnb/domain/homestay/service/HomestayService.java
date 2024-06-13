@@ -1,11 +1,11 @@
 package com.roninhub.airbnb.domain.homestay.service;
 
+import com.roninhub.airbnb.domain.homestay.constant.AvailabilityStatus;
+import com.roninhub.airbnb.domain.homestay.dto.request.HomestaySearchRequest;
 import com.roninhub.airbnb.domain.homestay.entity.Homestay;
-import com.roninhub.airbnb.domain.homestay.entity.HomestayDetail;
+import com.roninhub.airbnb.domain.homestay.dto.response.HomestayDetail;
 import com.roninhub.airbnb.domain.homestay.repository.HomestayDetailRepository;
 import com.roninhub.airbnb.domain.homestay.repository.HomestayRepository;
-import jakarta.annotation.PostConstruct;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -26,9 +26,9 @@ public class HomestayService {
         return homestay;
     }
 
-    @PostConstruct
-    public void init() {
-        var homestayDetails = detailRepository.searchHomestay(0, "2024-06-12", "2024-06-15");
-        log.debug("hotels: {}", homestayDetails);
+    public List<HomestayDetail> searchHomestays(HomestaySearchRequest request) {
+        request.setStatus(AvailabilityStatus.AVAILABLE);
+        var homestayDetails = detailRepository.searchHomestays(request);
+        return homestayDetails;
     }
 }

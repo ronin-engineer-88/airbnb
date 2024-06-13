@@ -1,12 +1,11 @@
 package com.roninhub.airbnb.api;
 
+import com.roninhub.airbnb.domain.homestay.dto.request.HomestaySearchRequest;
 import com.roninhub.airbnb.domain.homestay.entity.Homestay;
+import com.roninhub.airbnb.domain.homestay.dto.response.HomestayDetail;
 import com.roninhub.airbnb.domain.homestay.service.HomestayService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -23,5 +22,24 @@ public class HotelController {
         return service.getHomestayById(id);
     }
 
-//    public
+    @GetMapping
+    public List<HomestayDetail> searchHomestay(@RequestParam("checkin_date") String checkInDate,
+                                               @RequestParam("checkout_date") String checkOutDate,
+                                               @RequestParam("guests") Integer guests,
+                                               @RequestParam(value = "ward_id", required = false) Integer wardId,
+                                               @RequestParam(value = "district_id", required = false) Integer districtId,
+                                               @RequestParam(value = "city_id", required = false) Integer cityId,
+                                               @RequestParam(value = "state_id", required = false) Integer stateId) {
+        var request = HomestaySearchRequest.builder()
+                .checkInDate(checkInDate)
+                .checkOutDate(checkOutDate)
+                .guests(guests)
+                .wardId(wardId)
+                .districtId(districtId)
+                .cityId(cityId)
+                .stateId(stateId)
+                .build();
+
+        return service.searchHomestays(request);
+    }
 }

@@ -1,27 +1,16 @@
 package com.roninhub.airbnb.domain.homestay.entity;
 
 
+import com.roninhub.airbnb.domain.homestay.dto.response.HomestayDetail;
 import com.roninhub.airbnb.domain.homestay.entity.address.Ward;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.io.Serializable;
-import java.math.BigDecimal;
 import java.util.Date;
 import java.util.Set;
 
-@SqlResultSetMapping(
-        name = "HomestayDetailMapping",
-        classes = @ConstructorResult(
-                targetClass = HomestayDetail.class,
-                columns = {
-                        @ColumnResult(name = "id", type = Long.class),
-                        @ColumnResult(name = "name", type = String.class),
-                        @ColumnResult(name = "description", type = String.class),
-                        @ColumnResult(name = "avg_price", type = BigDecimal.class)
-                }
-        )
-)
+
 //@NamedNativeQuery(
 //        name = "Homestay.searchHomestay",
 //        resultSetMapping = "HomestayDetailMapping",
@@ -37,6 +26,27 @@ import java.util.Set;
 //            as vh using (id)
 //            """
 //)
+
+@SqlResultSetMapping(
+        name = "HomestayDetailMapping",
+        classes = @ConstructorResult(
+                targetClass = HomestayDetail.class,
+                columns = {
+                        @ColumnResult(name = "id", type = Long.class),
+                        @ColumnResult(name = "name", type = String.class),
+                        @ColumnResult(name = "description", type = String.class),
+                        @ColumnResult(name = "type", type = Integer.class),
+                        @ColumnResult(name = "status", type = Integer.class),
+                        @ColumnResult(name = "phone_number", type = String.class),
+                        @ColumnResult(name = "address", type = String.class),
+                        @ColumnResult(name = "guests", type = Integer.class),
+                        @ColumnResult(name = "bedrooms", type = Integer.class),
+                        @ColumnResult(name = "bathrooms", type = Integer.class),
+                        @ColumnResult(name = "version", type = Long.class),
+                        @ColumnResult(name = "avg_price", type = Double.class)
+                }
+        )
+)
 
 
 @Entity

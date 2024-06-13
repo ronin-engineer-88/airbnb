@@ -1,0 +1,27 @@
+server:
+    port: 8080
+
+spring:
+  application:
+    name: ronin-airbnb
+
+  threads:
+    virtual:
+      enabled: true
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/airbnb
+    username: user
+    password: pass
+    jpa:
+      show-sql: true
+      hibernate:
+        ddl-auto: none
+
+  jackson:
+    property-naming-strategy: SNAKE_CASE
+
+logging:
+  level:
+    org.hibernate.SQL: DEBUG
+    org.hibernate.orm.jdbc.bind: TRACE

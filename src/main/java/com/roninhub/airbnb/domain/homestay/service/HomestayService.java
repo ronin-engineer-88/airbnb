@@ -1,6 +1,6 @@
 package com.roninhub.airbnb.domain.homestay.service;
 
-import com.roninhub.airbnb.domain.homestay.constant.AvailabilityStatus;
+import com.roninhub.airbnb.domain.booking.constant.AvailabilityStatus;
 import com.roninhub.airbnb.domain.homestay.dto.request.HomestaySearchRequest;
 import com.roninhub.airbnb.domain.homestay.entity.Homestay;
 import com.roninhub.airbnb.domain.homestay.dto.response.HomestayDetail;
@@ -22,13 +22,14 @@ public class HomestayService {
 
 
     public Homestay getHomestayById(Long id) {
-        Homestay homestay = repository.findById(id).orElse(null);
+        var homestay = repository.findById(id).orElse(null);
         return homestay;
     }
 
     public List<HomestayDetail> searchHomestays(HomestaySearchRequest request) {
         request.setStatus(AvailabilityStatus.AVAILABLE);
         var homestayDetails = detailRepository.searchHomestays(request);
+
         return homestayDetails;
     }
 }

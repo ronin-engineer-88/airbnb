@@ -1,4 +1,4 @@
-package com.roninhub.airbnb.domain.homestay.constant;
+package com.roninhub.airbnb.domain.booking.constant;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -8,8 +8,9 @@ import lombok.RequiredArgsConstructor;
 public enum AvailabilityStatus {
 
     AVAILABLE(0),
-    BOOKED(1),
-    SERVED(2)
+    HELD(1),
+    BOOKED(2),
+    SERVED(3)
     ;
 
 

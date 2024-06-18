@@ -14,18 +14,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public class HomestayDetailRepositoryImpl implements HomestayDetailRepository {
 
-    private final static String SEARCH_HOMESTAY_SQL = """
-            select * from homestay inner join (
-            select h.id, avg(ha.price) as avg_price
-            from homestay h
-            join homestay_availability ha on h.id = ha.homestay_id
-            where ha.status = :status
-            and ha.date between cast(:checkInDate as date) and cast(:checkOutDate as date)
-            group by h.id
-            having count(ha.date) = (cast(:checkOutDate as date) - cast(:checkInDate as date)) + 1)
-            as vh using (id)
-            """;
-
     private final static String SEARCH_HOMESTAY_BASE_SQL = """
             select id, name, description, type, status, phone_number,
             address, guests, bedrooms, bathrooms, version, avg_price
@@ -44,16 +32,6 @@ public class HomestayDetailRepositoryImpl implements HomestayDetailRepository {
 
     private final EntityManager entityManager;
 
-    @Override
-    public List<HomestayDetail> searchHomestay(Integer status, String checkInDate, String checkOutDate) {
-        var query = entityManager.createNativeQuery(SEARCH_HOMESTAY_SQL, "HomestayDetailMapping");
-
-        query.setParameter("status", status);
-        query.setParameter("checkInDate", checkInDate);
-        query.setParameter("checkOutDate", checkOutDate);
-
-        return query.getResultList();
-    }
 
     @Override
     public List<HomestayDetail> searchHomestays(HomestaySearchRequest request) {

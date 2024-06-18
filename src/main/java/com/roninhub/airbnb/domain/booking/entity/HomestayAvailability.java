@@ -1,20 +1,23 @@
 package com.roninhub.airbnb.domain.booking.entity;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.sql.Date;
+import java.time.LocalDate;
 
 
 @Entity
 @Table(name = "homestay_availability")
+@IdClass(HomestayAvailabilityId.class)
 @RequiredArgsConstructor
+@AllArgsConstructor
 @Getter
 @Setter
-@IdClass(HomestayAvailabilityId.class)
 public class HomestayAvailability {
 
     @Id
@@ -23,7 +26,7 @@ public class HomestayAvailability {
 
     @Id
     @Column(name = "date")
-    private Date date;
+    private LocalDate date;
 
     @Column(name = "price")
     private BigDecimal price;

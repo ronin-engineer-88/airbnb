@@ -8,11 +8,6 @@ import java.util.List;
 public interface HomestayDetailRepository {
 
 
-    List<HomestayDetail> searchHomestay(Integer status,
-                                        String startDate,
-                                        String endDate);
-
-
     List<HomestayDetail> searchHomestays(HomestaySearchRequest request);
 
 }

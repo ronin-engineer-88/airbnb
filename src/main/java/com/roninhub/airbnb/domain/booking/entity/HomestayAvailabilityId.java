@@ -5,15 +5,15 @@ import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 
 import java.io.Serializable;
-import java.sql.Date;
+import java.time.LocalDate;
 
 
 @RequiredArgsConstructor
 @EqualsAndHashCode
 public class HomestayAvailabilityId implements Serializable {
 
-    private String homestayId;
+    private Long homestayId;
 
-    private Date date;
+    private LocalDate date;
 
 }

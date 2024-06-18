@@ -28,10 +28,12 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
     compileOnly 'org.projectlombok:lombok'
     implementation group: 'io.hypersistence', name: 'hypersistence-utils-hibernate-63', version: '3.7.6'
+    implementation 'org.mapstruct:mapstruct:1.5.5.Final'
 
     runtimeOnly 'org.postgresql:postgresql'
 
     annotationProcessor 'org.projectlombok:lombok'
+    annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.5.Final'
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test'

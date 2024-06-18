@@ -1,7 +1,7 @@
 package com.roninhub.airbnb.domain.homestay.dto.request;
 
 
-import com.roninhub.airbnb.domain.homestay.constant.AvailabilityStatus;
+import com.roninhub.airbnb.domain.booking.constant.AvailabilityStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

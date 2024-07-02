@@ -18,7 +18,7 @@ public interface HomestayRepository extends JpaRepository<Homestay, Long> {
     with destination as (
         select st_transform(st_setsrid(st_makepoint(:longitude, :latitude), 4326), 3857) as geom
     )
-    select id, name, description, images, vh.night_amount, vh.total_amount
+    select id, name, description, images, address, bedrooms, vh.night_amount, vh.total_amount
     from destination d, homestay hs inner join
     (
         select h.id, avg(ha.price) as night_amount, sum(ha.price) as total_amount

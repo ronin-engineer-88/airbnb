@@ -4,13 +4,14 @@ create table homestay
     name         text not null,
     description  text,
     type         integer,
+    host_id      bigint,
     status       integer,
     phone_number text,
 
     address      text,
-    ward_id      integer,
-    district_id  integer,
-    province_id  integer,
+    longitude    double precision,
+    latitude     double precision,
+    geom         geometry(Point, 3857),
 
     images text[],
 
@@ -71,11 +72,12 @@ create table booking
     guests        smallint not null,
     status        smallint not null,
 
-    currency      text     not null,
     subtotal      numeric(12, 6),
-    discount      numeric(6, 8),
+    fee           numeric(12, 6),
+    discount      numeric(12, 6),
     total_amount  numeric  not null,
     price_detail  jsonb,
+    currency      text     not null,
 
     note          text,
     request_id    text     not null,
@@ -115,6 +117,7 @@ create table ward
 (
     id          integer generated always as identity primary key,
     ward_name   text not null,
+    place_id text,
     district_id integer
 );
 
@@ -123,6 +126,7 @@ create table district
 (
     id            integer generated always as identity primary key,
     district_name text not null,
+    place_id text,
     province_id   integer
 );
 
@@ -130,5 +134,6 @@ create table province
 (
     id            integer generated always as identity primary key,
     province_name text not null,
+    place_id text,
     country_id    integer
 );

@@ -12,14 +12,24 @@ import org.springframework.stereotype.Service;
 public class ResponseFactory {
 
     @Value("${spring.application.name}")
-    String applicationShortName;
+    String appName;
 
 
     public ResponseDto response(ResponseCode responseCode) {
         var meta = Meta.builder()
-                .type(responseCode.getType())
+                .status(responseCode.getType())
+                .serviceId(appName)
                 .build();
 
         return new ResponseDto(meta, null);
+    }
+
+    public ResponseDto response(Object payload) {
+        var meta = Meta.builder()
+                .status(ResponseCode.SUCCESS.getType())
+                .serviceId(appName)
+                .build();
+
+        return new ResponseDto(meta, payload);
     }
 }

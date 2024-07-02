@@ -18,7 +18,7 @@ public class Meta {
     @JsonProperty("request_id")
     private String requestId;
 
-    private String type;
+    private String status;
 
     private String message;
 

@@ -7,6 +7,7 @@ import lombok.Getter;
 @Getter
 public enum ResponseCode {
 
+    SUCCESS("SUCCESS", 200),
     INTERNAL_SERVER_ERROR("INTERNAL_SERVER_ERROR", 500),
     HOMESTAY_NOT_FOUND("HOMESTAY_NOT_FOUND", 404),
     GUESTS_INVALID("GUESTS_INVALID", 400),

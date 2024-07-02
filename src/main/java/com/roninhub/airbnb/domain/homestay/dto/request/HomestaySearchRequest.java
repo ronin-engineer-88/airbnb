@@ -7,19 +7,21 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
+
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 public class HomestaySearchRequest {
 
-    private String checkInDate;
-    private String checkOutDate;
+    private Double longitude;
+    private Double latitude;
+    private Double radius;
+    private LocalDate checkinDate;
+    private LocalDate checkoutDate;
     private Integer guests;
-    private Integer wardId;
-    private Integer districtId;
-    private Integer cityId;
-    private Integer stateId;
     private AvailabilityStatus status;
 
 }

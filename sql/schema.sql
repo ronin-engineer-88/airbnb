@@ -137,3 +137,7 @@ create table province
     place_id text,
     country_id    integer
 );
+
+CREATE EXTENSION postgis;
+
+create index idx_homestay_geom on homestay using gist (geom);

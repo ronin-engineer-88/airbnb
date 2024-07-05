@@ -18,8 +18,6 @@ public interface HomestayDTO {
 
     String getPhoneNumber();
 
-    String getAddress();
-
     Integer getGuests();
 
     Integer getBedrooms();
@@ -29,4 +27,10 @@ public interface HomestayDTO {
     Double getNightAmount();
 
     Double getTotalAmount();
+
+    String getAddress();
+
+    Double getLongitude();
+
+    Double getLatitude();
 }

@@ -10,5 +10,5 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class ResponseDto {
     private Meta meta;
-    private Object data;
+    private Object payload;
 }

@@ -13,6 +13,7 @@ public class DiscountService {
     private static final BigDecimal LONG_STAY_DISCOUNT_RATE = BigDecimal.valueOf(-0.05);
 
 
+    // Return a negative amount
     public BigDecimal getDiscountAmount(BigDecimal subtotal, int nights) {
         BigDecimal discount = BigDecimal.ZERO;
 

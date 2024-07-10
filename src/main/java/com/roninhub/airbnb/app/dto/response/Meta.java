@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Collection;
 import java.util.Map;
 
 
@@ -24,6 +25,8 @@ public class Meta {
 
     @JsonProperty("service_id")
     private String serviceId;
+
+    private Collection<ApiError> errors;
 
     @JsonProperty("extra_meta")
     private Map<String, Object> extraMeta;

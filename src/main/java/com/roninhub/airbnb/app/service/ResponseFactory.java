@@ -1,11 +1,14 @@
 package com.roninhub.airbnb.app.service;
 
+import com.roninhub.airbnb.app.dto.response.ApiError;
 import com.roninhub.airbnb.app.dto.response.Meta;
 import com.roninhub.airbnb.app.dto.response.ResponseDto;
 import com.roninhub.airbnb.domain.common.constant.ResponseCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+
+import java.util.Collection;
 
 @Service
 @RequiredArgsConstructor
@@ -31,5 +34,16 @@ public class ResponseFactory {
                 .build();
 
         return new ResponseDto(meta, payload);
+    }
+
+
+    public ResponseDto invalidParams(Collection<ApiError> errors) {
+        var meta = Meta.builder()
+                .status(ResponseCode.INVALID_PARAMS.getType())
+                .serviceId(appName)
+                .errors(errors)
+                .build();
+
+        return new ResponseDto(meta, null);
     }
 }

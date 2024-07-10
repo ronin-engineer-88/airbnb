@@ -9,8 +9,8 @@ public enum BookingStatus {
 
     DRAFT(0),
     BOOKED(1),
-    CANCELLED(2),
-    COMPLETED(3)
+    COMPLETED(2),
+    CANCELLED(3)
     ;
 
     private final int value;

@@ -14,6 +14,7 @@
 ## Docs
 - [Slides](https://drive.google.com/drive/folders/1AbyPadIeoFQJ25iQZwv1sLq-iIol-FNL?usp=sharing)
 - [ERD](https://drive.google.com/file/d/14XOV1NbqnQVkuVTLMTmH7dwj1mQtTkfN/view)
+- [Schema](./sql/schema.sql)
 
 ## Techniques
 - Data Modeling

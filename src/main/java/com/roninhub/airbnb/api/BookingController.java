@@ -3,6 +3,7 @@ package com.roninhub.airbnb.api;
 import com.roninhub.airbnb.domain.booking.dto.request.BookingRequest;
 import com.roninhub.airbnb.domain.booking.dto.response.BookingResponse;
 import com.roninhub.airbnb.domain.booking.service.BookingService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -19,10 +20,9 @@ public class BookingController {
 
     private final BookingService service;
 
-
     @PostMapping
-    public BookingResponse bookHomestay(@RequestBody BookingRequest request) {
-        log.info("Request: {}", request);
+    public BookingResponse bookHomestay(@Valid @RequestBody BookingRequest request) {
+        log.info("Booking Request: {}", request);
         return service.book(request);
     }
 }

@@ -14,7 +14,7 @@ import java.math.BigDecimal;
 @Setter
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class BookingResponse {
-    private String requestId;
+    private Long bookingId;
     private Long userId;
     private Long homestayId;
     private String checkinDate;
@@ -28,5 +28,6 @@ public class BookingResponse {
     private BigDecimal totalAmount;
     private String currency;
 
+    private String requestId;
     private String note;
 }

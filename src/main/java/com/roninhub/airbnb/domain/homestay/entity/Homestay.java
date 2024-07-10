@@ -3,11 +3,14 @@ package com.roninhub.airbnb.domain.homestay.entity;
 
 import com.roninhub.airbnb.domain.homestay.dto.response.HomestayDetail;
 import com.roninhub.airbnb.domain.homestay.entity.address.Ward;
+import io.hypersistence.utils.hibernate.type.array.ListArrayType;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.Type;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 import java.util.Set;
 
 
@@ -78,18 +81,28 @@ public class Homestay implements Serializable {
     @Column(name = "address")
     private String address;
 
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "ward_id")
-    private Ward ward;
+    @Column(name = "longitude")
+    private Double longitude;
 
-    @Column(name = "district_id")
-    private Integer districtId;
+    @Column(name = "latitude")
+    private Double latitude;
 
-    @Column(name = "city_id")
-    private String cityId;
+    @Column(name = "images", columnDefinition = "text[]")
+    @Type(ListArrayType.class)
+    private List<String> images;
 
-    @Column(name = "province_id")
-    private String provinceId;
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "ward_id")
+//    private Ward ward;
+//
+//    @Column(name = "district_id")
+//    private Integer districtId;
+//
+//    @Column(name = "city_id")
+//    private String cityId;
+
+//    @Column(name = "province_id")
+//    private String provinceId;
 
     @Column(name = "guests")
     private Integer guests;
@@ -126,9 +139,9 @@ public class Homestay implements Serializable {
     @Column(name = "updated_by")
     private String updatedBy;
 
-    public Homestay(Long id, String name, String description) {
-        this.id = id;
-        this.name = name;
-        this.description = description;
-    }
+//    public Homestay(Long id, String name, String description) {
+//        this.id = id;
+//        this.name = name;
+//        this.description = description;
+//    }
 }

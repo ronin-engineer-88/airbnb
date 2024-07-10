@@ -44,7 +44,6 @@ public class HomestayService {
 //            throw new BusinessException(ResponseCode.CHECKIN_DATE_INVALID);
 //        }
 
-
         int nights = (int) DateUtil.getDiffInDays(checkinDate, checkoutDate);
         checkoutDate = checkoutDate.minusDays(1);
 

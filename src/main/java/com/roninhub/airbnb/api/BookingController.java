@@ -21,7 +21,7 @@ public class BookingController {
     private final BookingService service;
 
     @PostMapping
-    public BookingResponse bookHomestay(@Valid @RequestBody BookingRequest request) {
+    BookingResponse bookHomestay(@Valid @RequestBody BookingRequest request) {
         log.info("Booking Request: {}", request);
         return service.book(request);
     }

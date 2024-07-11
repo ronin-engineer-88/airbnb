@@ -7,6 +7,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import lombok.*;
 import jakarta.validation.constraints.NotBlank;
+import org.hibernate.validator.constraints.Length;
 
 import java.time.LocalDate;
 
@@ -30,11 +31,12 @@ public class BookingRequest {
     @NotNull(message = "checkin_date cannot be blank")
     private LocalDate checkinDate;
 
-    @NotNull(message = "checkin_date cannot be blank")
+    @NotNull(message = "checkout_date cannot be blank")
     private LocalDate checkoutDate;
 
     @Positive(message = "guests must be positive")
     private Integer guests;
 
+    @Length(max = 500, message = "note cannot be longer than 255 characters")
     private String note;
 }

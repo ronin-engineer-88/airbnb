@@ -1,4 +1,4 @@
-package com.roninhub.airbnb.api;
+package com.roninhub.airbnb.api.rest;
 
 import com.roninhub.airbnb.app.dto.response.ResponseDto;
 import com.roninhub.airbnb.app.service.ResponseFactory;

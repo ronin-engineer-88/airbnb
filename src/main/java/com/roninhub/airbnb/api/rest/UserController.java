@@ -1,4 +1,4 @@
-package com.roninhub.airbnb.api;
+package com.roninhub.airbnb.api.rest;
 
 
 import org.springframework.web.bind.annotation.RequestMapping;

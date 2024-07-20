@@ -1,5 +1,6 @@
 package com.roninhub.airbnb.domain.payment.service;
 
+import com.roninhub.airbnb.domain.booking.service.BookingService;
 import com.roninhub.airbnb.domain.common.constant.Currency;
 import com.roninhub.airbnb.domain.common.constant.Locale;
 import com.roninhub.airbnb.domain.common.constant.ResponseCode;
@@ -73,38 +74,58 @@ public class VNPayService implements PaymentService {
 
         Map<String, String> params = new HashMap<>();
 
-        params.put("vnp_Version", VERSION);
-        params.put("vnp_Command", COMMAND);
+        params.put(VNPayParams.VERSION, VERSION);
+        params.put(VNPayParams.COMMAND, COMMAND);
 
-        params.put("vnp_TmnCode", tmnCode);
-        params.put("vnp_Amount", String.valueOf(amount));
-        params.put("vnp_CurrCode", Currency.VND.getValue());
-        params.put("vnp_TxnRef", txnRef);
+        params.put(VNPayParams.TMN_CODE, tmnCode);
+        params.put(VNPayParams.AMOUNT, String.valueOf(amount));
+        params.put(VNPayParams.CURRENCY, Currency.VND.getValue());
 
-        params.put("vnp_ReturnUrl", returnUrl);
+        params.put(VNPayParams.TXN_REF, txnRef);
+        params.put(VNPayParams.RETURN_URL, returnUrl);
 
-        params.put("vnp_CreateDate", createdDate);
-        params.put("vnp_ExpireDate", expiredDate);
-        params.put("vnp_IpAddr", ipAddress);
-        params.put("vnp_Locale", Locale.VIETNAM.getCode());
+        params.put(VNPayParams.CREATED_DATE, createdDate);
+        params.put(VNPayParams.EXPIRE_DATE, expiredDate);
 
-        params.put("vnp_OrderInfo", orderInfo);
-        params.put("vnp_OrderType", ORDER_TYPE);
+        params.put(VNPayParams.IP_ADDRESS, ipAddress);
+        params.put(VNPayParams.LOCALE, Locale.VIETNAM.getCode());
 
+        params.put(VNPayParams.ORDER_INFO, orderInfo);
+        params.put(VNPayParams.ORDER_TYPE, ORDER_TYPE);
 
         var initPaymentUrl = buildInitPaymentUrl(params);
-
+        log.info("Init payment url: {}", initPaymentUrl);
         return InitPaymentResponse.builder()
                 .vnpUrl(initPaymentUrl)
                 .build();
     }
 
-    public VNPayIpnResponse processIpn(Map<String, String> params) {
-        if (!verifyIpn(params)) {
-            return VnpIpnResponseConst.SIGNATURE_FAILED;
+    public boolean verifyIpn(Map<String, String> params) {
+        var reqSecureHash = params.get(VNPayParams.SECURE_HASH);
+        params.remove(VNPayParams.SECURE_HASH);
+        params.remove(VNPayParams.SECURE_HASH_TYPE);
+        var hashPayload = new StringBuilder();
+        var fieldNames = new ArrayList<>(params.keySet());
+        Collections.sort(fieldNames);
+
+        var itr = fieldNames.iterator();
+        while (itr.hasNext()) {
+            var fieldName = itr.next();
+            var fieldValue = params.get(fieldName);
+            if ((fieldValue != null) && (!fieldValue.isEmpty())) {
+                //Build hash data
+                hashPayload.append(fieldName);
+                hashPayload.append(Symbol.EQUAL);
+                hashPayload.append(URLEncoder.encode(fieldValue, StandardCharsets.US_ASCII));
+
+                if (itr.hasNext()) {
+                    hashPayload.append(Symbol.AND);
+                }
+            }
         }
 
-        return VnpIpnResponseConst.SUCCESS;
+        var secureHash = cryptoService.sign(hashPayload.toString());
+        return secureHash.equals(reqSecureHash);
     }
 
     private String buildPaymentDetail(InitPaymentRequest request) {
@@ -152,31 +173,5 @@ public class VNPayService implements PaymentService {
         return initPaymentPrefixUrl + "?" + query;
     }
 
-    private boolean verifyIpn(Map<String, String> params) {
-        var reqSecureHash = params.get(VNPayParams.SECURE_HASH);
-        params.remove(VNPayParams.SECURE_HASH);
-        params.remove(VNPayParams.SECURE_HASH_TYPE);
-        var hashPayload = new StringBuilder();
-        var fieldNames = new ArrayList<>(params.keySet());
-        Collections.sort(fieldNames);
 
-        var itr = fieldNames.iterator();
-        while (itr.hasNext()) {
-            var fieldName = itr.next();
-            var fieldValue = params.get(fieldName);
-            if ((fieldValue != null) && (!fieldValue.isEmpty())) {
-                //Build hash data
-                hashPayload.append(fieldName);
-                hashPayload.append(Symbol.EQUAL);
-                hashPayload.append(URLEncoder.encode(fieldValue, StandardCharsets.US_ASCII));
-
-                if (itr.hasNext()) {
-                    hashPayload.append(Symbol.AND);
-                }
-            }
-        }
-
-        var secureHash = cryptoService.sign(hashPayload.toString());
-        return secureHash.equals(reqSecureHash);
-    }
 }

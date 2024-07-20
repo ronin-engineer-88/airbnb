@@ -26,4 +26,14 @@ public interface HomestayAvailabilityRepository extends JpaRepository<HomestayAv
                                                                @Param("status") Integer status,
                                                                @Param("checkinDate") LocalDate checkinDate,
                                                                @Param("checkoutDate") LocalDate checkoutDate);
+
+    @Query(value = """
+    SELECT new HomestayAvailability(ha.homestayId, ha.date, ha.price, ha.status)
+        FROM HomestayAvailability ha
+        WHERE ha.homestayId = :homestayId
+        AND ha.date BETWEEN :checkinDate AND :checkoutDate
+    """)
+    List<HomestayAvailability> findRange(@Param("homestayId") Long homestayId,
+                                         @Param("checkinDate") LocalDate checkinDate,
+                                         @Param("checkoutDate") LocalDate checkoutDate);
 }

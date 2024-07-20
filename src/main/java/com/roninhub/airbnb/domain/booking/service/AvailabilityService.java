@@ -49,4 +49,10 @@ public class AvailabilityService {
     public void saveAll(List<HomestayAvailability> aDays) {
         availabilityRepository.saveAll(aDays);
     }
+
+    public List<HomestayAvailability> getRange(final Long homestayId,
+                                               final LocalDate checkinDate,
+                                               final LocalDate checkoutDate) {
+        return availabilityRepository.findRange(homestayId, checkinDate, checkoutDate.minusDays(1));
+    }
 }

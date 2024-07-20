@@ -27,7 +27,7 @@ import java.time.LocalDate;
 @Slf4j
 public class BookingService {
 
-    private final BookingRepository bookingRepository;
+    private final BookingRepository repository;
     private final AvailabilityService availabilityService;
     private final HomestayService homestayService;
     private final PricingService pricingService;
@@ -68,13 +68,14 @@ public class BookingService {
         aDays.forEach(a -> a.setStatus(AvailabilityStatus.HELD.getValue()));
 
         availabilityService.saveAll(aDays);
-        bookingRepository.save(booking);
+        repository.save(booking);
 
         var initPaymentRequest = InitPaymentRequest.builder()
-                .requestId(booking.getRequestId())
                 .userId(booking.getUserId())
-                .txnRef(String.valueOf(booking.getId()))
                 .amount(booking.getTotalAmount().longValue())
+                .txnRef(String.valueOf(booking.getId()))
+                .requestId(booking.getRequestId())
+                .ipAddress(request.getIpAddress())
                 .build();
 
         var initPaymentResponse = paymentService.init(initPaymentRequest);
@@ -86,9 +87,28 @@ public class BookingService {
                 .build();
     }
 
-//    public BookingDto markBooked(String bookingId) {
-//
-//    }
+    @Transactional
+    public BookingDto markBooked(Long bookingId) {
+        final var bookingOpt = repository.findById(bookingId);
+        if (bookingOpt.isEmpty()) {
+            throw new BusinessException(ResponseCode.BOOKING_NOT_FOUND);
+        }
+
+        final var booking = bookingOpt.get();
+        final var aDays = availabilityService.getRange(
+                booking.getHomestayId(),
+                booking.getCheckinDate(),
+                booking.getCheckoutDate()
+        );
+
+        booking.setStatus(BookingStatus.BOOKED.getValue());
+        aDays.forEach(a -> a.setStatus(AvailabilityStatus.BOOKED.getValue()));
+
+        availabilityService.saveAll(aDays);
+        repository.save(booking);
+
+        return mapper.toResponse(booking);
+    }
 
     private void validateRequest(final BookingRequest request) {
         final var checkinDate = request.getCheckinDate();

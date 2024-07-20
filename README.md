@@ -70,3 +70,17 @@ curl --location 'http://localhost:8080/api/v1/bookings' \
 }'
 ```
 
+ngrok http 8080 --domain=fox-funny-noticeably.ngrok-free.app
+
+
+Sandbox VNPay Test
+1. Thẻ nội địa
+2. NCB
+3. Nhập thông tin thẻ
+```
+9704198526191432198
+NGUYEN VAN A
+07/15
+```
+4. Nhập OTP: `123456`
+

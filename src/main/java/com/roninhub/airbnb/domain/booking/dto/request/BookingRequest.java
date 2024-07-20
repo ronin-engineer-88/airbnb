@@ -39,4 +39,6 @@ public class BookingRequest {
 
     @Length(max = 500, message = "note cannot be longer than 255 characters")
     private String note;
+
+    private String ipAddress;
 }

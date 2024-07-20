@@ -3,10 +3,14 @@ package com.roninhub.airbnb.infrastructure.util;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.TimeZone;
 
 public class DateUtil {
     protected static final SimpleDateFormat ISO_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
+    protected static final SimpleDateFormat VNPAY_DATE_FORMAT = new SimpleDateFormat("yyyyMMddHHmmss");
+    public static final Calendar VN_CALENDAR = Calendar.getInstance(TimeZone.getTimeZone("Etc/GMT+7"));
 
     public static Date parseISO(String date) {
         try {
@@ -22,6 +26,14 @@ public class DateUtil {
 
     public static LocalDate parse(String date) {
         return LocalDate.parse(date);
+    }
+
+    public static String getVnTime() {
+        return VNPAY_DATE_FORMAT.format(VN_CALENDAR.getTime());
+    }
+
+    public static String formatVnTime(Calendar calendar) {
+        return VNPAY_DATE_FORMAT.format(calendar.getTime());
     }
 
 //    public static void main(String[] agrs) {

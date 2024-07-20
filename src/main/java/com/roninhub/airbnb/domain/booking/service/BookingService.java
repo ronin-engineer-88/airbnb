@@ -3,6 +3,7 @@ package com.roninhub.airbnb.domain.booking.service;
 import com.roninhub.airbnb.domain.booking.constant.AvailabilityStatus;
 import com.roninhub.airbnb.domain.booking.constant.BookingStatus;
 import com.roninhub.airbnb.domain.booking.dto.request.BookingRequest;
+import com.roninhub.airbnb.domain.booking.dto.response.BookingDto;
 import com.roninhub.airbnb.domain.booking.dto.response.BookingResponse;
 import com.roninhub.airbnb.domain.booking.entity.Booking;
 import com.roninhub.airbnb.domain.booking.mapper.BookingMapper;
@@ -11,6 +12,8 @@ import com.roninhub.airbnb.domain.common.constant.ResponseCode;
 import com.roninhub.airbnb.domain.common.exception.BusinessException;
 import com.roninhub.airbnb.domain.homestay.constant.HomestayStatus;
 import com.roninhub.airbnb.domain.homestay.service.HomestayService;
+import com.roninhub.airbnb.domain.payment.dto.InitPaymentRequest;
+import com.roninhub.airbnb.domain.payment.service.PaymentService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -28,6 +31,7 @@ public class BookingService {
     private final AvailabilityService availabilityService;
     private final HomestayService homestayService;
     private final PricingService pricingService;
+    private final PaymentService paymentService;
     private final BookingMapper mapper;
 
 
@@ -37,15 +41,13 @@ public class BookingService {
         validateRequest(request);
         validateHomestay(request);
 
-        final Long homestayId = request.getHomestayId();
-        final LocalDate checkinDate = request.getCheckinDate();
-        final LocalDate checkoutDate = request.getCheckoutDate();
+        final var homestayId = request.getHomestayId();
+        final var checkinDate = request.getCheckinDate();
+        final var checkoutDate = request.getCheckoutDate();
 
         log.debug("[request_id={}] User user_id={} is acquiring lock homestay_id={} from checkin_date={} to checkout_date={}", request.getRequestId(), request.getUserId(), homestayId, checkinDate, checkoutDate);
         final var aDays = availabilityService.checkAvailabilityForBooking(homestayId, checkinDate, checkoutDate);
         log.debug("[request_id={}] User user_id={} locked homestay_id={} from checkin_date={} to checkout_date={}", request.getRequestId(), request.getUserId(), request.getHomestayId(), checkinDate, checkoutDate);
-
-        Thread.sleep(5000);
 
         final var price = pricingService.calculate(aDays);
         final var booking = Booking.builder()
@@ -59,16 +61,29 @@ public class BookingService {
                 .totalAmount(price.getTotalAmount())
                 .currency(price.getCurrency())
                 .note(request.getNote())
-                .status(BookingStatus.BOOKED.getValue())
+                .status(BookingStatus.PAYMENT_PROCESSING.getValue())
                 .requestId(request.getRequestId())
                 .build();
 
-        aDays.forEach(a -> a.setStatus(AvailabilityStatus.BOOKED.getValue()));
+        aDays.forEach(a -> a.setStatus(AvailabilityStatus.HELD.getValue()));
 
         availabilityService.saveAll(aDays);
         bookingRepository.save(booking);
+
+        var initPaymentRequest = InitPaymentRequest.builder()
+                .requestId(booking.getRequestId())
+                .userId(booking.getUserId())
+                .txnRef(String.valueOf(booking.getId()))
+                .amount(booking.getTotalAmount().longValue())
+                .build();
+
+        var initPaymentResponse = paymentService.init(initPaymentRequest);
+        var bookingDto = mapper.toResponse(booking);
         log.info("[request_id={}] User user_id={} created booking_id={} successfully", request.getRequestId(), request.getUserId(), booking.getId());
-        return mapper.toResponse(booking);
+        return BookingResponse.builder()
+                .booking(bookingDto)
+                .payment(initPaymentResponse)
+                .build();
     }
 
     private void validateRequest(final BookingRequest request) {

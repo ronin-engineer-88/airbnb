@@ -1,4 +1,4 @@
-package com.roninhub.airbnb.domain.booking.constant;
+package com.roninhub.airbnb.domain.common.constant;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

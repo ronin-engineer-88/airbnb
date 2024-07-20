@@ -1,6 +1,6 @@
 package com.roninhub.airbnb.domain.booking.service;
 
-import com.roninhub.airbnb.domain.booking.constant.Currency;
+import com.roninhub.airbnb.domain.common.constant.Currency;
 import com.roninhub.airbnb.domain.booking.dto.BookingPrice;
 import com.roninhub.airbnb.domain.booking.entity.HomestayAvailability;
 import lombok.RequiredArgsConstructor;

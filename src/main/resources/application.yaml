@@ -22,6 +22,14 @@ spring:
     property-naming-strategy: SNAKE_CASE
     default-property-inclusion: non_null
 
+payment:
+  vnpay:
+    tmn-code: RONINHUB
+    secret-key: ${VNPAY_SECRET_KEY}
+    init-payment-url: https://sandbox.vnpayment.vn/paymentv2/vpcpay.html
+    return-url: https://dev.roninhub.com/order/%s/status
+    timeout: 15 # in minutes
+
 logging:
   level:
     org.hibernate.SQL: DEBUG

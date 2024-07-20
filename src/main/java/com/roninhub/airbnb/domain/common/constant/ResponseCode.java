@@ -19,6 +19,8 @@ public enum ResponseCode {
     CHECKIN_DATE_INVALID("CHECKIN_DATE_INVALID", 400),
     NIGHTS_INVALID("NIGHTS_INVALID", 400),
     HOMESTAY_BUSY("HOMESTAY_BUSY", 400),
+
+    VNPAY_SIGNING_FAILED("VNPAY_SIGNING_FAILED", 400),
     ;
 
     private final String type;

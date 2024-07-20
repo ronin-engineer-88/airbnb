@@ -2,8 +2,13 @@ package com.roninhub.airbnb.domain.payment.service;
 
 import com.roninhub.airbnb.domain.common.constant.Currency;
 import com.roninhub.airbnb.domain.common.constant.Locale;
-import com.roninhub.airbnb.domain.payment.dto.InitPaymentRequest;
-import com.roninhub.airbnb.domain.payment.dto.InitPaymentResponse;
+import com.roninhub.airbnb.domain.common.constant.ResponseCode;
+import com.roninhub.airbnb.domain.common.exception.BusinessException;
+import com.roninhub.airbnb.domain.payment.constant.VNPayParams;
+import com.roninhub.airbnb.domain.payment.constant.VnpIpnResponseConst;
+import com.roninhub.airbnb.domain.payment.dto.request.InitPaymentRequest;
+import com.roninhub.airbnb.domain.payment.dto.response.InitPaymentResponse;
+import com.roninhub.airbnb.domain.payment.dto.response.VNPayIpnResponse;
 import com.roninhub.airbnb.infrastructure.constant.Symbol;
 import com.roninhub.airbnb.infrastructure.util.DateUtil;
 import jakarta.annotation.PostConstruct;
@@ -42,18 +47,17 @@ public class VNPayService implements PaymentService {
 
     private final CryptoService cryptoService;
 
-
-    @PostConstruct
-    void init() {
-        var resp = init(InitPaymentRequest.builder()
-                .requestId("r45")
-                .ipAddress("127.0.0.1")
-                .userId(34L)
-                .txnRef("b02")
-                .amount(100000)
-                .build());
-        log.info("Init payment url: {}", resp.getVnpUrl());
-    }
+//    @PostConstruct
+//    void init() {
+//        var resp = init(InitPaymentRequest.builder()
+//                .requestId("r45")
+//                .ipAddress("127.0.0.1")
+//                .userId(34L)
+//                .txnRef("b02")
+//                .amount(100000)
+//                .build());
+//        log.info("Init payment url: {}", resp.getVnpUrl());
+//    }
 
     public InitPaymentResponse init(InitPaymentRequest request) {
         var requestId = request.getRequestId();
@@ -95,6 +99,14 @@ public class VNPayService implements PaymentService {
                 .build();
     }
 
+    public VNPayIpnResponse processIpn(Map<String, String> params) {
+        if (!verifyIpn(params)) {
+            return VnpIpnResponseConst.SIGNATURE_FAILED;
+        }
+
+        return VnpIpnResponseConst.SUCCESS;
+    }
+
     private String buildPaymentDetail(InitPaymentRequest request) {
         return String.format("Thanh toan don dat phong %s", request.getTxnRef());
     }
@@ -124,6 +136,7 @@ public class VNPayService implements PaymentService {
                 query.append(URLEncoder.encode(fieldName, StandardCharsets.US_ASCII));
                 query.append(Symbol.EQUAL);
                 query.append(URLEncoder.encode(fieldValue, StandardCharsets.US_ASCII));
+
                 if (itr.hasNext()) {
                     query.append(Symbol.AND);
                     hashPayload.append(Symbol.AND);
@@ -137,5 +150,33 @@ public class VNPayService implements PaymentService {
         query.append(secureHash);
 
         return initPaymentPrefixUrl + "?" + query;
+    }
+
+    private boolean verifyIpn(Map<String, String> params) {
+        var reqSecureHash = params.get(VNPayParams.SECURE_HASH);
+        params.remove(VNPayParams.SECURE_HASH);
+        params.remove(VNPayParams.SECURE_HASH_TYPE);
+        var hashPayload = new StringBuilder();
+        var fieldNames = new ArrayList<>(params.keySet());
+        Collections.sort(fieldNames);
+
+        var itr = fieldNames.iterator();
+        while (itr.hasNext()) {
+            var fieldName = itr.next();
+            var fieldValue = params.get(fieldName);
+            if ((fieldValue != null) && (!fieldValue.isEmpty())) {
+                //Build hash data
+                hashPayload.append(fieldName);
+                hashPayload.append(Symbol.EQUAL);
+                hashPayload.append(URLEncoder.encode(fieldValue, StandardCharsets.US_ASCII));
+
+                if (itr.hasNext()) {
+                    hashPayload.append(Symbol.AND);
+                }
+            }
+        }
+
+        var secureHash = cryptoService.sign(hashPayload.toString());
+        return secureHash.equals(reqSecureHash);
     }
 }

@@ -1,4 +1,4 @@
-package com.roninhub.airbnb.domain.payment.dto;
+package com.roninhub.airbnb.domain.payment.dto.request;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;

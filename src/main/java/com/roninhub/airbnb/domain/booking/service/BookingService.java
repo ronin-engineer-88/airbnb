@@ -12,7 +12,7 @@ import com.roninhub.airbnb.domain.common.constant.ResponseCode;
 import com.roninhub.airbnb.domain.common.exception.BusinessException;
 import com.roninhub.airbnb.domain.homestay.constant.HomestayStatus;
 import com.roninhub.airbnb.domain.homestay.service.HomestayService;
-import com.roninhub.airbnb.domain.payment.dto.InitPaymentRequest;
+import com.roninhub.airbnb.domain.payment.dto.request.InitPaymentRequest;
 import com.roninhub.airbnb.domain.payment.service.PaymentService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -85,6 +85,10 @@ public class BookingService {
                 .payment(initPaymentResponse)
                 .build();
     }
+
+//    public BookingDto markBooked(String bookingId) {
+//
+//    }
 
     private void validateRequest(final BookingRequest request) {
         final var checkinDate = request.getCheckinDate();

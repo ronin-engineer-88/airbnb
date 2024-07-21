@@ -48,17 +48,6 @@ public class VNPayService implements PaymentService {
 
     private final CryptoService cryptoService;
 
-//    @PostConstruct
-//    void init() {
-//        var resp = init(InitPaymentRequest.builder()
-//                .requestId("r45")
-//                .ipAddress("127.0.0.1")
-//                .userId(34L)
-//                .txnRef("b02")
-//                .amount(100000)
-//                .build());
-//        log.info("Init payment url: {}", resp.getVnpUrl());
-//    }
 
     public InitPaymentResponse init(InitPaymentRequest request) {
         var requestId = request.getRequestId();
@@ -173,5 +162,15 @@ public class VNPayService implements PaymentService {
         return initPaymentPrefixUrl + "?" + query;
     }
 
-
+//    @PostConstruct
+//    void init() {
+//        var resp = init(InitPaymentRequest.builder()
+//                .requestId("r45")
+//                .ipAddress("127.0.0.1")
+//                .userId(34L)
+//                .txnRef("b02")
+//                .amount(100000)
+//                .build());
+//        log.info("Init payment url: {}", resp.getVnpUrl());
+//    }
 }

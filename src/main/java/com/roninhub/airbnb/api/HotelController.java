@@ -43,6 +43,6 @@ public class HotelController {
 
         var result = service.searchHomestays(request);
 
-        return responseFactory.response(result);
+        return responseFactory.success(result);
     }
 }

@@ -5,6 +5,7 @@ import com.roninhub.airbnb.domain.booking.constant.BookingStatus;
 import com.roninhub.airbnb.domain.booking.dto.request.BookingRequest;
 import com.roninhub.airbnb.domain.booking.dto.response.BookingDto;
 import com.roninhub.airbnb.domain.booking.dto.response.BookingResponse;
+import com.roninhub.airbnb.domain.booking.dto.response.BookingStatusResponse;
 import com.roninhub.airbnb.domain.booking.entity.Booking;
 import com.roninhub.airbnb.domain.booking.mapper.BookingMapper;
 import com.roninhub.airbnb.domain.booking.repository.BookingRepository;
@@ -79,7 +80,7 @@ public class BookingService {
                 .build();
 
         var initPaymentResponse = paymentService.init(initPaymentRequest);
-        var bookingDto = mapper.toResponse(booking);
+        var bookingDto = mapper.toBookingDto(booking);
         log.info("[request_id={}] User user_id={} created booking_id={} successfully", request.getRequestId(), request.getUserId(), booking.getId());
         return BookingResponse.builder()
                 .booking(bookingDto)
@@ -107,7 +108,16 @@ public class BookingService {
         availabilityService.saveAll(aDays);
         repository.save(booking);
 
-        return mapper.toResponse(booking);
+        return mapper.toBookingDto(booking);
+    }
+
+    public BookingStatusResponse getBookingStatus(Long bookingId) {
+        final var bookingOpt = repository.findById(bookingId);
+        if (bookingOpt.isEmpty()) {
+            throw new BusinessException(ResponseCode.BOOKING_NOT_FOUND);
+        }
+
+        return mapper.toBookingStatusResponse(bookingOpt.get());
     }
 
     private void validateRequest(final BookingRequest request) {

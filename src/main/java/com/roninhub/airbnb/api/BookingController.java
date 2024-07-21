@@ -1,18 +1,15 @@
 package com.roninhub.airbnb.api;
 
+import com.roninhub.airbnb.app.dto.response.ResponseDto;
+import com.roninhub.airbnb.app.service.ResponseFactory;
 import com.roninhub.airbnb.app.util.RequestUtil;
 import com.roninhub.airbnb.domain.booking.dto.request.BookingRequest;
-import com.roninhub.airbnb.domain.booking.dto.response.BookingDto;
-import com.roninhub.airbnb.domain.booking.dto.response.BookingResponse;
 import com.roninhub.airbnb.domain.booking.service.BookingService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 
 @RestController
@@ -22,14 +19,23 @@ import org.springframework.web.bind.annotation.RestController;
 public class BookingController {
 
     private final BookingService service;
+    private final ResponseFactory responseFactory;
+
 
     @PostMapping
-    BookingResponse bookHomestay(@Valid @RequestBody BookingRequest request,
-                                 HttpServletRequest httpServletRequest) {
+    ResponseDto bookHomestay(@Valid @RequestBody BookingRequest request,
+                                             HttpServletRequest httpServletRequest) {
         var ipAddress = RequestUtil.getIpAddress(httpServletRequest);
         request.setIpAddress(ipAddress);
 
         log.info("Booking Request: {}", request);
-        return service.book(request);
+        var response = service.book(request);
+        return responseFactory.success(response);
+    }
+
+    @GetMapping("/{bookingId}/status")
+    ResponseDto getBookingStatus(@PathVariable Long bookingId) {
+        var response = service.getBookingStatus(bookingId);
+        return responseFactory.success(response);
     }
 }

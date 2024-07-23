@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/v1/homestays")
 @RequiredArgsConstructor
-public class HotelController {
+public class StayController {
 
     private final HomestayService service;
     private final ResponseFactory responseFactory;

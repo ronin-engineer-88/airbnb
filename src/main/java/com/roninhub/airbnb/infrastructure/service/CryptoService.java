@@ -1,4 +1,4 @@
-package com.roninhub.airbnb.domain.payment.service;
+package com.roninhub.airbnb.infrastructure.service;
 
 import com.roninhub.airbnb.domain.common.constant.ResponseCode;
 import com.roninhub.airbnb.domain.common.exception.BusinessException;

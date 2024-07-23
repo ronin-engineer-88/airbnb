@@ -11,7 +11,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @Getter
 @Setter
-public class VNPayIpnResponse {
+public class IpnResponse {
 
     @JsonProperty("RspCode")
     private String responseCode;

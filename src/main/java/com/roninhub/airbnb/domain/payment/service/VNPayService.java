@@ -1,18 +1,13 @@
 package com.roninhub.airbnb.domain.payment.service;
 
-import com.roninhub.airbnb.domain.booking.service.BookingService;
 import com.roninhub.airbnb.domain.common.constant.Currency;
 import com.roninhub.airbnb.domain.common.constant.Locale;
-import com.roninhub.airbnb.domain.common.constant.ResponseCode;
-import com.roninhub.airbnb.domain.common.exception.BusinessException;
 import com.roninhub.airbnb.domain.payment.constant.VNPayParams;
-import com.roninhub.airbnb.domain.payment.constant.VnpIpnResponseConst;
 import com.roninhub.airbnb.domain.payment.dto.request.InitPaymentRequest;
 import com.roninhub.airbnb.domain.payment.dto.response.InitPaymentResponse;
-import com.roninhub.airbnb.domain.payment.dto.response.VNPayIpnResponse;
 import com.roninhub.airbnb.infrastructure.constant.Symbol;
+import com.roninhub.airbnb.infrastructure.service.CryptoService;
 import com.roninhub.airbnb.infrastructure.util.DateUtil;
-import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -83,7 +78,7 @@ public class VNPayService implements PaymentService {
         params.put(VNPayParams.ORDER_TYPE, ORDER_TYPE);
 
         var initPaymentUrl = buildInitPaymentUrl(params);
-        log.info("Init payment url: {}", initPaymentUrl);
+        log.debug("[request_id={}] Init payment url: {}", requestId, initPaymentUrl);
         return InitPaymentResponse.builder()
                 .vnpUrl(initPaymentUrl)
                 .build();

@@ -1,6 +1,6 @@
 package com.roninhub.airbnb.api;
 
-import com.roninhub.airbnb.domain.payment.dto.response.VNPayIpnResponse;
+import com.roninhub.airbnb.domain.payment.dto.response.IpnResponse;
 import com.roninhub.airbnb.domain.payment.service.IpnHandler;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,7 +18,7 @@ public class PaymentController {
 
 
     @GetMapping("/vnpay_ipn")
-    VNPayIpnResponse processIpn(@RequestParam Map<String, String> params) {
+    IpnResponse processIpn(@RequestParam Map<String, String> params) {
         log.info("VNPay IPN: {}", params);
         return ipnHandler.process(params);
     }

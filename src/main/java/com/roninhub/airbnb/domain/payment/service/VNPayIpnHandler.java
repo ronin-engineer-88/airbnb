@@ -28,8 +28,9 @@ public class VNPayIpnHandler implements IpnHandler {
         }
 
         IpnResponse response;
+        var txnRef = params.get(VNPayParams.TXN_REF);
         try {
-            var bookingId = Long.parseLong(params.get(VNPayParams.TXN_REF));
+            var bookingId = Long.parseLong(txnRef);
             bookingService.markBooked(bookingId);
             response = VnpIpnResponseConst.SUCCESS;
         }
@@ -43,7 +44,7 @@ public class VNPayIpnHandler implements IpnHandler {
             response = VnpIpnResponseConst.UNKNOWN_ERROR;
         }
 
-        log.info("VNPay Ipn Response: {}", response);
+        log.info("[VNPay Ipn] txnRef: {}, response: {}", txnRef, response);
         return response;
     }
 }

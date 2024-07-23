@@ -18,7 +18,7 @@ import java.security.NoSuchAlgorithmException;
 @Slf4j
 public class CryptoService {
 
-    private final Mac MAC = Mac.getInstance(DefaultValue.HMAC_SHA512);
+    private final Mac mac = Mac.getInstance(DefaultValue.HMAC_SHA512);
 
     @Value("${payment.vnpay.secret-key}")
     private String secretKey;
@@ -29,13 +29,13 @@ public class CryptoService {
     @PostConstruct
     void init() throws InvalidKeyException {
         SecretKeySpec secretKeySpec = new SecretKeySpec(secretKey.getBytes(), DefaultValue.HMAC_SHA512);
-        MAC.init(secretKeySpec);
+        mac.init(secretKeySpec);
     }
 
 
     public String sign(String data) {
         try {
-            return EncodingUtil.toHexString(MAC.doFinal(data.getBytes()));
+            return EncodingUtil.toHexString(mac.doFinal(data.getBytes()));
         }
         catch (Exception e) {
             throw new BusinessException(ResponseCode.VNPAY_SIGNING_FAILED);

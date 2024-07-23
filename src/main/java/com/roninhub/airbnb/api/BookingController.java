@@ -24,7 +24,7 @@ public class BookingController {
 
     @PostMapping
     ResponseDto bookHomestay(@Valid @RequestBody BookingRequest request,
-                                             HttpServletRequest httpServletRequest) {
+                             HttpServletRequest httpServletRequest) {
         var ipAddress = RequestUtil.getIpAddress(httpServletRequest);
         request.setIpAddress(ipAddress);
 

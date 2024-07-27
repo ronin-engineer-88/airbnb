@@ -19,7 +19,7 @@ public class PaymentController {
 
     @GetMapping("/vnpay_ipn")
     IpnResponse processIpn(@RequestParam Map<String, String> params) {
-        log.info("VNPay IPN: {}", params);
+        log.info("[VNPay Ipn] Params: {}", params);
         return ipnHandler.process(params);
     }
 }

@@ -9,12 +9,12 @@ public class RequestUtil {
         if (xForwardedForHeader == null) {
             var remoteAddr = request.getRemoteAddr();
             if (remoteAddr == null) {
-                remoteAddr = "127.0.0.1";
+                remoteAddr = "127.0.0.1";   // TODO: the ip of this BE app
             }
 
             return remoteAddr;
-        } else {
-            return xForwardedForHeader.split(",")[0].trim();
         }
+
+        return xForwardedForHeader.split(",")[0].trim();
     }
 }

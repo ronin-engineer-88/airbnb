@@ -60,27 +60,47 @@ curl --location 'http://localhost:8080/api/v1/homestays?longitude=105.8509367711
 curl --location 'http://localhost:8080/api/v1/bookings' \
 --header 'Content-Type: application/json' \
 --data '{
-    "request_id": "qweq",
+    "request_id": "01J2E5VW4PGZF9813YSRYPC0Q1",
     "user_id": 1,
     "homestay_id": 1,
-    "checkin_date": "2024-07-10",
-    "checkout_date": "2024-07-13",
+    "checkin_date": "2024-07-26",
+    "checkout_date": "2024-07-29",
     "guests": 2,
-    "note": "note test"
+    "note": "message to the host"
 }'
 ```
 
-ngrok http 8080 --domain=fox-funny-noticeably.ngrok-free.app
-
-
-Sandbox VNPay Test
-1. Thẻ nội địa
-2. NCB
-3. Nhập thông tin thẻ
+3. Check the booking status
+```shell
+curl --location 'http://localhost:8080/api/v1/bookings/16/status'
 ```
-9704198526191432198
-NGUYEN VAN A
-07/15
+
+## Payment Testing
+This guide for Local Testing.
+
+1. Create an ngrok account and register a domain.
+2. Install ngrok in local machine and add the auth token.
+```bash
+snap install ngrok
+ngrok config add-authtoken <token>
 ```
-4. Nhập OTP: `123456`
+3. Create tunnel
+```bash
+ngrok http 8080 --domain=<your-domain>.ngrok-free.app
+```
+
+4. Call the booking homestay API.
+
+5. Copy the `vnp_url` then paste onto the browser.
+
+6. Fake a payment:
+   - Choose "Thẻ nội địa"
+   - Bank: NCB
+   - Enter the card info:
+    ```
+    9704198526191432198
+    NGUYEN VAN A
+    07/15
+    ```
+   - Enter OTP: `123456`
 

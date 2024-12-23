@@ -1,3 +1,5 @@
+CREATE EXTENSION postgis;
+
 create table homestay
 (
     id           bigint generated always as identity primary key,
@@ -26,6 +28,8 @@ create table homestay
     updated_at   timestamp with time zone,
     updated_by   bigint
 );
+
+create index idx_homestay_geom on homestay using gist (geom);
 
 create table "user"
 (
@@ -138,6 +142,5 @@ create table province
     country_id    integer
 );
 
-CREATE EXTENSION postgis;
 
-create index idx_homestay_geom on homestay using gist (geom);
+

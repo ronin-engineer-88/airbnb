@@ -3,7 +3,9 @@ package com.roninhub.airbnb.domain.booking.dto.request;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
+import com.roninhub.airbnb.infrastructure.constant.DateConst;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Positive;
 import lombok.*;
 import jakarta.validation.constraints.NotBlank;
@@ -28,9 +30,17 @@ public class BookingRequest {
     private Long homestayId;
 
     @NotNull(message = "checkin_date cannot be blank")
+//    @Pattern(
+//            regexp = DateConst.ISO_8601_PATTERN,
+//            message = "checkin_date is invalid"
+//    )
     private LocalDate checkinDate;
 
-    @NotNull(message = "checkin_date cannot be blank")
+    @NotNull(message = "checkout_date cannot be blank")
+//    @Pattern(
+//            regexp = DateConst.ISO_8601_PATTERN,
+//            message = "checkout_date is invalid"
+//    )
     private LocalDate checkoutDate;
 
     @Positive(message = "guests must be positive")

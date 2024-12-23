@@ -46,20 +46,19 @@ public class BookingService {
 
         final LocalDate checkinDate = request.getCheckinDate();
         final LocalDate checkoutDate = request.getCheckoutDate();
-
         final int nights = (int) DateUtil.getDiffInDays(checkinDate, checkoutDate);
         if (nights > NIGHT_MAX) {
             throw new BusinessException(ResponseCode.NIGHTS_INVALID);
         }
 
-        log.debug("[request_id={}] User user_id={} is trying to lock homestay_id={} for {} nights, checkin_date={} and checkout_date={}", request.getRequestId(), request.getUserId(), request.getHomestayId(), nights, checkinDate, checkoutDate);
+        log.debug("[request_id={}] User user_id={} is acquiring lock homestay_id={} for {} nights from checkin_date={} to checkout_date={}", request.getRequestId(), request.getUserId(), request.getHomestayId(), nights, checkinDate, checkoutDate);
         final var aDays = availabilityRepository.findAndLockHomestayAvailability(
                 request.getHomestayId(),
                 AvailabilityStatus.AVAILABLE.getValue(),
                 checkinDate,
                 checkoutDate.minusDays(1)
         );
-        log.debug("[request_id={}] User user_id={} is trying to lock homestay_id={} for {} nights, checkin_date={} and checkout_date={}", request.getRequestId(), request.getUserId(), request.getHomestayId(), nights, checkinDate, checkoutDate);
+        log.debug("[request_id={}] User user_id={} locked homestay_id={} for {} nights from checkin_date={} to checkout_date={}", request.getRequestId(), request.getUserId(), request.getHomestayId(), nights, checkinDate, checkoutDate);
         if (aDays.isEmpty() || aDays.size() < nights) {
             throw new BusinessException(ResponseCode.HOMESTAY_BUSY);
         }
@@ -80,7 +79,7 @@ public class BookingService {
                 .requestId(request.getRequestId())
                 .build();
 
-        aDays.forEach(availability -> availability.setStatus(AvailabilityStatus.BOOKED.getValue()));
+        aDays.forEach(a -> a.setStatus(AvailabilityStatus.BOOKED.getValue()));
 
         availabilityRepository.saveAll(aDays);
         bookingRepository.save(booking);

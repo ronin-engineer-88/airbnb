@@ -1,5 +1,6 @@
 version: '3.8'
 
+name: airbnb-stack
 services:
   postgres:
     container_name: postgres-16
@@ -11,7 +12,7 @@ services:
     volumes:
       - airbnb-db:/data/postgres
     ports:
-      - "5433:5432"
+      - "5432:5432"
     networks:
       - postgres
     restart: unless-stopped

@@ -10,7 +10,7 @@ spring:
       enabled: true
 
   datasource:
-    url: jdbc:postgresql://localhost:5433/airbnb
+    url: jdbc:postgresql://localhost:5432/airbnb
     username: user
     password: pass
     jpa:

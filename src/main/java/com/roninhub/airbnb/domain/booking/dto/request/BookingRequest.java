@@ -3,12 +3,11 @@ package com.roninhub.airbnb.domain.booking.dto.request;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
-import com.roninhub.airbnb.infrastructure.constant.DateConst;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Positive;
 import lombok.*;
 import jakarta.validation.constraints.NotBlank;
+import org.hibernate.validator.constraints.Length;
 
 import java.time.LocalDate;
 
@@ -46,5 +45,6 @@ public class BookingRequest {
     @Positive(message = "guests must be positive")
     private Integer guests;
 
+    @Length(max = 500, message = "note cannot be longer than 255 characters")
     private String note;
 }

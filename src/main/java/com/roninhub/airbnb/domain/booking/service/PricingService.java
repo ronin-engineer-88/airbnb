@@ -17,8 +17,10 @@ public class PricingService {
 
     private final DiscountService discountService;
 
-    public BookingPrice calculate(final List<HomestayAvailability> aDays, final int nights) {
+    public BookingPrice calculate(final List<HomestayAvailability> aDays) {
+        final var nights = aDays.size();
         var subtotal = BigDecimal.ZERO;
+
         for (var aDay: aDays) {
             subtotal = subtotal.add(aDay.getPrice());
         }

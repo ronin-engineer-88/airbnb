@@ -2,28 +2,24 @@ package com.roninhub.airbnb.domain.booking.service;
 
 import com.roninhub.airbnb.domain.booking.constant.AvailabilityStatus;
 import com.roninhub.airbnb.domain.booking.constant.BookingStatus;
-import com.roninhub.airbnb.domain.booking.constant.Currency;
 import com.roninhub.airbnb.domain.booking.dto.request.BookingRequest;
 import com.roninhub.airbnb.domain.booking.dto.response.BookingResponse;
 import com.roninhub.airbnb.domain.booking.entity.Booking;
-import com.roninhub.airbnb.domain.booking.entity.HomestayAvailability;
 import com.roninhub.airbnb.domain.booking.mapper.BookingMapper;
 import com.roninhub.airbnb.domain.booking.repository.BookingRepository;
 import com.roninhub.airbnb.domain.booking.repository.HomestayAvailabilityRepository;
 import com.roninhub.airbnb.domain.common.constant.ResponseCode;
 import com.roninhub.airbnb.domain.common.exception.BusinessException;
 import com.roninhub.airbnb.domain.homestay.constant.HomestayStatus;
-import com.roninhub.airbnb.domain.homestay.entity.Homestay;
 import com.roninhub.airbnb.domain.homestay.service.HomestayService;
 import com.roninhub.airbnb.infrastructure.util.DateUtil;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -39,11 +35,13 @@ public class BookingService {
     private final BookingMapper mapper;
 
 
+    @SneakyThrows
     @Transactional
     public BookingResponse book(final BookingRequest request) {
         validateRequest(request);
         validateHomestay(request);
 
+        final Long homestayId = request.getHomestayId();
         final LocalDate checkinDate = request.getCheckinDate();
         final LocalDate checkoutDate = request.getCheckoutDate();
         final int nights = (int) DateUtil.getDiffInDays(checkinDate, checkoutDate);
@@ -51,21 +49,21 @@ public class BookingService {
             throw new BusinessException(ResponseCode.NIGHTS_INVALID);
         }
 
-        log.debug("[request_id={}] User user_id={} is acquiring lock homestay_id={} for {} nights from checkin_date={} to checkout_date={}", request.getRequestId(), request.getUserId(), request.getHomestayId(), nights, checkinDate, checkoutDate);
+        log.debug("[request_id={}] User user_id={} is acquiring lock homestay_id={} from checkin_date={} to checkout_date={}", request.getRequestId(), request.getUserId(), homestayId, checkinDate, checkoutDate);
         final var aDays = availabilityRepository.findAndLockHomestayAvailability(
                 request.getHomestayId(),
                 AvailabilityStatus.AVAILABLE.getValue(),
                 checkinDate,
                 checkoutDate.minusDays(1)
         );
-        log.debug("[request_id={}] User user_id={} locked homestay_id={} for {} nights from checkin_date={} to checkout_date={}", request.getRequestId(), request.getUserId(), request.getHomestayId(), nights, checkinDate, checkoutDate);
+        log.debug("[request_id={}] User user_id={} locked homestay_id={} from checkin_date={} to checkout_date={}", request.getRequestId(), request.getUserId(), homestayId, checkinDate, checkoutDate);
         if (aDays.isEmpty() || aDays.size() < nights) {
             throw new BusinessException(ResponseCode.HOMESTAY_BUSY);
         }
 
-        final var price = pricingService.calculate(aDays, nights);
+        final var price = pricingService.calculate(aDays);
         final var booking = Booking.builder()
-                .homestayId(request.getHomestayId())
+                .homestayId(homestayId)
                 .userId(request.getUserId())
                 .checkinDate(checkinDate)
                 .checkoutDate(checkoutDate)

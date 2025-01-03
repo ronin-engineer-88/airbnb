@@ -15,6 +15,7 @@ import com.roninhub.airbnb.domain.common.constant.ResponseCode;
 import com.roninhub.airbnb.domain.common.exception.BusinessException;
 import com.roninhub.airbnb.domain.homestay.constant.HomestayStatus;
 import com.roninhub.airbnb.domain.homestay.entity.Homestay;
+import com.roninhub.airbnb.domain.homestay.entity.ListingType;
 import com.roninhub.airbnb.domain.homestay.service.HomestayService;
 import com.roninhub.airbnb.infrastructure.util.DateUtil;
 import jakarta.transaction.Transactional;
@@ -54,7 +55,7 @@ public class BookingService {
         availabilityRepository.saveAll(aDays);
         bookingRepository.save(booking);
 
-        sendNotifications(booking);
+        sendNotifications(booking, homestay);
 
         log.info("[request_id={}] User user_id={} created booking_id={} successfully", request.getRequestId(), request.getUserId(), booking.getId());
         return mapper.toResponse(booking);
@@ -76,6 +77,11 @@ public class BookingService {
 
     protected Homestay validateHomestay(final BookingRequest request) {
         final var homestay = homestayService.getHomestayById(request.getHomestayId());
+
+        if (ListingType.of(homestay.getType()) == ListingType.APARTMENT) {
+            log.info("Checking the status of the building...");
+        }
+
         if (homestay == null) {
             throw new BusinessException(ResponseCode.HOMESTAY_NOT_FOUND);
         }
@@ -135,11 +141,11 @@ public class BookingService {
                 .build();
     }
 
-    protected void sendNotifications(Booking booking) {
+    protected void sendNotifications(Booking booking, Homestay homestay) {
         log.info("Sending email to user={}", booking.getUserId());
-    }
 
-    protected void postProcess(Booking booking) {
-        log.info("Producing event to topic: {}, value: {}", "ronin-booking-dev", booking.getId());
+        if (ListingType.of(homestay.getType()) == ListingType.APARTMENT) {
+            log.info("Checking the status of the building...");
+        }
     }
 }

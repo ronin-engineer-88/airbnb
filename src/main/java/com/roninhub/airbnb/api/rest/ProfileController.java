@@ -1,4 +1,4 @@
-package com.roninhub.airbnb.api;
+package com.roninhub.airbnb.api.rest;
 
 
 import com.roninhub.airbnb.domain.user.entity.Profile;

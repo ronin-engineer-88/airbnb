@@ -1,4 +1,4 @@
-package com.roninhub.airbnb.api;
+package com.roninhub.airbnb.api.rest;
 
 import com.roninhub.airbnb.domain.booking.dto.request.BookingRequest;
 import com.roninhub.airbnb.domain.booking.dto.response.BookingResponse;

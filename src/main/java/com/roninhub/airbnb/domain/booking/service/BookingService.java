@@ -41,6 +41,7 @@ public class BookingService {
         validateRequest(request);
         validateHomestay(request);
 
+        // check availability
         final Long homestayId = request.getHomestayId();
         final LocalDate checkinDate = request.getCheckinDate();
         final LocalDate checkoutDate = request.getCheckoutDate();
@@ -62,6 +63,7 @@ public class BookingService {
         }
 
         final var price = pricingService.calculate(aDays);
+        // build booking
         final var booking = Booking.builder()
                 .homestayId(homestayId)
                 .userId(request.getUserId())
@@ -82,6 +84,7 @@ public class BookingService {
         availabilityRepository.saveAll(aDays);
         bookingRepository.save(booking);
 
+        // Notify
         log.info("Sending email to user={}", booking.getUserId());
 
         log.info("[request_id={}] User user_id={} created booking_id={} successfully", request.getRequestId(), request.getUserId(), booking.getId());

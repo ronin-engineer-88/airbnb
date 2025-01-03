@@ -78,10 +78,6 @@ public class BookingService {
     protected Homestay validateHomestay(final BookingRequest request) {
         final var homestay = homestayService.getHomestayById(request.getHomestayId());
 
-        if (ListingType.of(homestay.getType()) == ListingType.APARTMENT) {
-            log.info("Checking the status of the building...");
-        }
-
         if (homestay == null) {
             throw new BusinessException(ResponseCode.HOMESTAY_NOT_FOUND);
         }
@@ -98,6 +94,10 @@ public class BookingService {
     }
 
     protected List<HomestayAvailability> checkAvailability(Homestay homestay, BookingRequest request) {
+        if (ListingType.of(homestay.getType()) == ListingType.APARTMENT) {
+            log.info("Checking the status of the building...");
+        }
+
         final Long homestayId = request.getHomestayId();
         final LocalDate checkinDate = request.getCheckinDate();
         final LocalDate checkoutDate = request.getCheckoutDate();

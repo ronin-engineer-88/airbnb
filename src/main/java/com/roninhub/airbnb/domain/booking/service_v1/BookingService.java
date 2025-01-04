@@ -145,7 +145,7 @@ public class BookingService {
         log.info("Sending email to user={}", booking.getUserId());
 
         if (ListingType.of(homestay.getType()) == ListingType.APARTMENT) {
-            log.info("Checking the status of the building...");
+            log.info("Sending email to the building...");
         }
     }
 }

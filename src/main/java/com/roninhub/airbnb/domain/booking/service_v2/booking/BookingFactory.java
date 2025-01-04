@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class BookingFactory {
+public class BookingFactory {   // Abstract Factory
 
     private final VillaBookingService villaBookingService;
     private HomestayService homestayService;
@@ -18,7 +18,7 @@ public class BookingFactory {
     private ApartmentBookingService apartmentBookingService;
 
 
-    public BaseBookingService build(BookingRequest request) {
+    public BookingService build(BookingRequest request) {
         var homestay = homestayService.getHomestayById(request.getHomestayId());
         if (homestay == null) {
             throw new BusinessException(ResponseCode.HOMESTAY_NOT_FOUND);

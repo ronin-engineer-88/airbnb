@@ -29,7 +29,7 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class BaseBookingService {
+public class BaseBookingService implements BookingService {
 
     private static final int NIGHT_MAX = 365;
 
@@ -39,9 +39,9 @@ public class BaseBookingService {
     private PricingService pricingService;
     private BookingMapper mapper;
 
-    // Template Method
     @SneakyThrows
     @Transactional
+    // Template Method
     public BookingResponse execute(BookingRequest request) {
         validateRequest(request);
         var homestay = validateHomestay(request);
@@ -55,7 +55,7 @@ public class BaseBookingService {
         bookingRepository.save(booking);
 
         sendNotifications(booking);
-        postProcess(booking);
+        postProcess(booking);   // hook method
 
         log.info("[request_id={}] User user_id={} created booking_id={} successfully", request.getRequestId(), request.getUserId(), booking.getId());
         return mapper.toResponse(booking);
@@ -141,6 +141,5 @@ public class BaseBookingService {
     }
 
     protected void postProcess(Booking booking) {
-        log.info("Producing event to topic: {}, value: {}", "ronin-booking-dev", booking.getId());
     }
 }

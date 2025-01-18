@@ -1,0 +1,295 @@
+// Create index
+PUT /airbnb_listings 
+{
+  "settings": {
+    "number_of_shards": 2,  // < 200M docs / 10 - 50GB / shard
+    "number_of_replicas": 1,
+    "analysis": {
+      "analyzer": {
+        "analyzer_custom": { // declare custom analyzer
+          "type":      "custom",
+          "tokenizer": "standard",
+          "filter":    [ "lowercase" ]
+        }
+      },
+      "normalizer": {
+        "normalizer_custom": {
+          "type": "custom",
+          "filter": ["lowercase"]
+        }
+      }
+    },
+    // nvd: improving scoring-related performance
+    // dvd: improving sorting, filtering or aggregations
+    "index.store.preload": ["nvd", "dvd"] // lazy load data that will be frequently accessed into filesystem cache
+  },
+  "mappings": {
+    "properties": {
+      "property_id": {
+        "type": "keyword" // Optimize exact lookups, sorting, and aggregations.
+      },
+      "title": {
+        "type": "text", // Fulltext search
+        "analyzer": "analyzer_custom", // Use the custom analyzer
+        "fields": {  
+          "keyword": {  // Store  as a single token (the entire string, not analyzed)
+            "type": "keyword", // Exact Matching
+            "ignore_above": 256
+          }
+        }
+      },
+      "property_type": {
+        "type": "keyword",
+        "normalizer": "normalizer_custom"
+      },
+      "description": {
+        "type": "text",
+        "analyzer": "analyzer_custom"
+      },
+      "avg_price": {
+        // "type": "float" // By default, doc_values (column-oriented fashion): efficient for sorting, aggregation
+        "type": "float_range" // Efficient filtering
+      },
+      "location": {
+        "type": "geo_point" // BKD Tree
+      },
+      "amenities": {
+        "type": "keyword"
+      },
+      "rating": {
+        "type": "float"
+      },
+      "host": {
+        "properties": {
+          "host_id": {
+            "type": "keyword"
+          },
+          "host_name": {
+            "type": "text",
+            "analyzer": "standard", // No need stemming
+            "fields": {
+              "keyword": {
+                "type": "keyword",
+                "ignore_above": 256
+              }
+            }
+          },
+          "host_language": {
+            "type": "keyword",
+            "normalizer": "normalizer_custom"
+          }
+        } // If this property is an array of objects, use `nested` type instead
+      },
+      "images": {
+        "type": "text",
+        "index": false  // No indexing, store and retrieve only in _source
+      },
+      "created_at": {
+        "type": "date"
+      }
+    }
+  }
+}
+
+// Speed up the process of generating data
+PUT /airbnb_listings/_settings
+{
+  "index": {
+    "refresh_interval": "-1",
+    "number_of_replicas": 0
+  }
+}
+
+GET /airbnb_listings/_settings
+
+PUT _bulk
+{ "index": { "_index": "airbnb_listings" } }
+{
+  "property_id": "5437",
+  "title": "Sample Title 1",
+  "property_type": "Apartment",
+  "description": "This is a generated description for property 1",
+  "avg_price": {
+      "gte": 266.272,
+      "lte": 461.792
+  },
+  "location": { "lat": 21.2255, "lon": 42.4511 },
+  "amenities": ["WiFi", "Air Conditioning", "Pool"],
+  "rating": 3.47168,
+  "host": {
+    "host_id": "2466",
+    "host_name": "Host 1",
+    "host_language": "English"
+  },
+  "images": ["https://example.com/image1.jpg"],
+  "created_at": "1577837142000"
+}
+{ "index": { "_index": "airbnb_listings" } }
+{
+  "property_id": "2466",
+  "title": "Sample Title 2",
+  "property_type": "Apartment",
+  "description": "This is a generated description for property 2",
+  "avg_price": {
+      "gte": 266.272,
+      "lte": 461.792
+  },
+  "location": { "lat": 21.2255, "lon": 42.4511 },
+  "amenities": ["WiFi", "Air Conditioning", "Pool"],
+  "rating": 3.47168,
+  "host": {
+    "host_id": "4843",
+    "host_name": "Host 2",
+    "host_language": "English"
+  },
+  "images": ["https://example.com/image2.jpg"],
+  "created_at": "1577857879000"
+}
+
+
+// Back to the previous settings
+PUT /airbnb_listings/_settings
+{
+  "index": {
+    "refresh_interval": "1s",
+    "number_of_replicas": 2
+  }
+}
+
+// Verify settings
+GET /airbnb_listings/_settings
+
+// Count
+GET /airbnb_listings/_count
+
+// Traditional count
+POST /airbnb_listings/_count
+{
+  "query": {
+    "bool": {
+      "filter": [
+        {
+          "range": {
+            "avg_price": {
+              "gte": 100,
+              "lte": 300
+            }
+          }
+        },
+        {
+          "term": {
+            "property_type": "Apartment"
+          }
+        }
+      ]
+    }
+  }
+}
+
+// Optimal Count (in this case)
+POST /airbnb_listings/_search
+{
+  "track_total_hits": 1000, // The total number of hits should be tracked
+  "size": 0,                // Ignore hits
+  "terminate_after": 1000,  // Limit the number of documents processed per shard
+  "query": {
+    "bool": {
+      "filter": [ // AND
+        {
+          "range": {
+            "avg_price": {
+              "gte": 100.1,
+              "lte": 101.2
+            }
+          }
+        },
+        {
+          "term": {
+            "property_type": "Apartment"
+          }
+        }
+      ]
+    }
+  }
+}
+
+// _id is not allowed to access directly --> clone _id as tie_breaker_id
+PUT /airbnb_listings/_mapping
+{
+  "properties": {
+    "tie_breaker_id": {
+      "type": "keyword"
+    }
+  }
+}
+
+// Copy value of _id to tie_breaker_id
+POST /airbnb_listings/_update_by_query
+{
+  "script": {
+    "source": "ctx._source.tie_breaker_id = ctx._id",
+    "lang": "painless"
+  }
+}
+
+// The first page
+POST /airbnb_listings/_search
+{
+  "track_total_hits": false,
+  "size": 18,
+  "query": {
+    "bool": {
+      "filter": [
+        {
+          "range": {
+            "avg_price": {
+              "gte": 100,
+              "lte": 300
+            }
+          }
+        },
+        {
+          "term": {
+            "property_type": "Apartment"
+          }
+        }
+      ]
+    }
+  },
+  "sort": [
+    { "rating": "desc" },
+    { "tie_breaker_id": "asc" }
+  ]
+}
+
+// The next page
+POST /airbnb_listings/_search
+{
+  "track_total_hits": false,
+  "size": 18,
+  "query": {
+    "bool": {
+      "filter": [
+        {
+          "range": {
+            "avg_price": {
+              "gte": 100,
+              "lte": 300
+            }
+          }
+        },
+        {
+          "term": {
+            "property_type": "Apartment"
+          }
+        }
+      ]
+    }
+  },
+  "sort": [
+    { "rating": "desc" },
+    { "tie_breaker_id": "asc" }
+  ],
+  "search_after": [3.83205, "MkvRc5QBUPCZ9PUagE3A"] // The last hit
+}
+// Both search_after and from/size has trade-offß

@@ -1,4 +1,4 @@
-package com.roninhub.airbnb.domain.booking.service;
+package com.roninhub.airbnb.domain.booking.service.booking_v0;
 
 import com.roninhub.airbnb.domain.booking.constant.AvailabilityStatus;
 import com.roninhub.airbnb.domain.booking.constant.BookingStatus;
@@ -8,6 +8,7 @@ import com.roninhub.airbnb.domain.booking.entity.Booking;
 import com.roninhub.airbnb.domain.booking.mapper.BookingMapper;
 import com.roninhub.airbnb.domain.booking.repository.BookingRepository;
 import com.roninhub.airbnb.domain.booking.repository.HomestayAvailabilityRepository;
+import com.roninhub.airbnb.domain.booking.service.PricingService;
 import com.roninhub.airbnb.domain.common.constant.ResponseCode;
 import com.roninhub.airbnb.domain.common.exception.BusinessException;
 import com.roninhub.airbnb.domain.homestay.constant.HomestayStatus;
@@ -24,7 +25,7 @@ import java.time.LocalDate;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class BookingService {
+public class BookingV0Service {
 
     private static final int NIGHT_MAX = 365;
 

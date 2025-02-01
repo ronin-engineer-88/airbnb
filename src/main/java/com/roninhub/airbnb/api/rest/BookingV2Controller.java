@@ -2,7 +2,7 @@ package com.roninhub.airbnb.api.rest;
 
 import com.roninhub.airbnb.domain.booking.dto.request.BookingRequest;
 import com.roninhub.airbnb.domain.booking.dto.response.BookingResponse;
-import com.roninhub.airbnb.domain.booking.service_v2.booking.BookingFactory;
+import com.roninhub.airbnb.domain.booking.service.booking_v2.BookingFactory;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

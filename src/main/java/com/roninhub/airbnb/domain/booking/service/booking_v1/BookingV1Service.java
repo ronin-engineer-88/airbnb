@@ -1,4 +1,4 @@
-package com.roninhub.airbnb.domain.booking.service_v2.booking;
+package com.roninhub.airbnb.domain.booking.service.booking_v1;
 
 import com.roninhub.airbnb.domain.booking.constant.AvailabilityStatus;
 import com.roninhub.airbnb.domain.booking.constant.BookingStatus;
@@ -15,6 +15,7 @@ import com.roninhub.airbnb.domain.common.constant.ResponseCode;
 import com.roninhub.airbnb.domain.common.exception.BusinessException;
 import com.roninhub.airbnb.domain.homestay.constant.HomestayStatus;
 import com.roninhub.airbnb.domain.homestay.entity.Homestay;
+import com.roninhub.airbnb.domain.homestay.entity.ListingType;
 import com.roninhub.airbnb.domain.homestay.service.HomestayService;
 import com.roninhub.airbnb.infrastructure.util.DateUtil;
 import jakarta.transaction.Transactional;
@@ -29,20 +30,20 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class BaseBookingService implements BookingService {
+public class BookingV1Service {
 
     private static final int NIGHT_MAX = 365;
 
-    private BookingRepository bookingRepository;
-    private HomestayAvailabilityRepository availabilityRepository;
-    private HomestayService homestayService;
-    private PricingService pricingService;
-    private BookingMapper mapper;
+    private final BookingRepository bookingRepository;
+    private final HomestayAvailabilityRepository availabilityRepository;
+    private final HomestayService homestayService;
+    private final PricingService pricingService;
+    private final BookingMapper mapper;
+
 
     @SneakyThrows
     @Transactional
-    // Template Method
-    public BookingResponse execute(BookingRequest request) {
+    public BookingResponse book(final BookingRequest request) {
         validateRequest(request);
         var homestay = validateHomestay(request);
         var aDays = checkAvailability(homestay, request);
@@ -54,8 +55,7 @@ public class BaseBookingService implements BookingService {
         availabilityRepository.saveAll(aDays);
         bookingRepository.save(booking);
 
-        sendNotifications(booking);
-        postProcess(booking);   // hook method
+        sendNotifications(booking, homestay);
 
         log.info("[request_id={}] User user_id={} created booking_id={} successfully", request.getRequestId(), request.getUserId(), booking.getId());
         return mapper.toResponse(booking);
@@ -77,6 +77,7 @@ public class BaseBookingService implements BookingService {
 
     protected Homestay validateHomestay(final BookingRequest request) {
         final var homestay = homestayService.getHomestayById(request.getHomestayId());
+
         if (homestay == null) {
             throw new BusinessException(ResponseCode.HOMESTAY_NOT_FOUND);
         }
@@ -93,6 +94,10 @@ public class BaseBookingService implements BookingService {
     }
 
     protected List<HomestayAvailability> checkAvailability(Homestay homestay, BookingRequest request) {
+        if (ListingType.of(homestay.getType()) == ListingType.APARTMENT) {
+            log.info("Checking the status of the building...");
+        }
+
         final Long homestayId = request.getHomestayId();
         final LocalDate checkinDate = request.getCheckinDate();
         final LocalDate checkoutDate = request.getCheckoutDate();
@@ -136,10 +141,11 @@ public class BaseBookingService implements BookingService {
                 .build();
     }
 
-    protected void sendNotifications(Booking booking) {
+    protected void sendNotifications(Booking booking, Homestay homestay) {
         log.info("Sending email to user={}", booking.getUserId());
-    }
 
-    protected void postProcess(Booking booking) {
+        if (ListingType.of(homestay.getType()) == ListingType.APARTMENT) {
+            log.info("Sending email to the building...");
+        }
     }
 }

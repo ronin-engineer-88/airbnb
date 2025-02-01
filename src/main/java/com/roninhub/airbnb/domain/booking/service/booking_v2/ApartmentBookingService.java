@@ -1,4 +1,4 @@
-package com.roninhub.airbnb.domain.booking.service_v2.booking;
+package com.roninhub.airbnb.domain.booking.service.booking_v2;
 
 import com.roninhub.airbnb.domain.booking.dto.request.BookingRequest;
 import com.roninhub.airbnb.domain.booking.entity.Booking;

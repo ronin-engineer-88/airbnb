@@ -38,3 +38,4 @@ out/
 **/.DS_Store
 
 **/data/
+java_pid**.hprof

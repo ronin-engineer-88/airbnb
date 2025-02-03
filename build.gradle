@@ -30,6 +30,7 @@ dependencies {
     implementation group: 'io.hypersistence', name: 'hypersistence-utils-hibernate-63', version: '3.7.6'
     implementation 'org.mapstruct:mapstruct:1.5.5.Final'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation 'com.google.guava:guava:31.1-jre'
 
     runtimeOnly 'org.postgresql:postgresql'
 

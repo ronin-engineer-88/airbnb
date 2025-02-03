@@ -1,20 +1,18 @@
 package com.roninhub.airbnb.domain.homestay.service;
 
+import com.google.common.cache.Cache;
 import com.roninhub.airbnb.domain.booking.constant.AvailabilityStatus;
-import com.roninhub.airbnb.domain.common.constant.ResponseCode;
-import com.roninhub.airbnb.domain.common.exception.BusinessException;
 import com.roninhub.airbnb.domain.homestay.dto.HomestayDTO;
 import com.roninhub.airbnb.domain.homestay.dto.request.HomestaySearchRequest;
 import com.roninhub.airbnb.domain.homestay.entity.Homestay;
-import com.roninhub.airbnb.domain.homestay.dto.response.HomestayDetail;
-import com.roninhub.airbnb.domain.homestay.repository.HomestayDetailRepository;
 import com.roninhub.airbnb.domain.homestay.repository.HomestayRepository;
+import com.roninhub.airbnb.infrastructure.util.BlankStringCreator;
 import com.roninhub.airbnb.infrastructure.util.DateUtil;
+import com.roninhub.airbnb.infrastructure.util.SeqNoGenerator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -23,7 +21,18 @@ import java.util.List;
 public class HomestayService {
 
     private final HomestayRepository repository;
+    private final Cache<String, String> cache;
 
+
+    public String getAndCacheHomestay() {
+        String homestayId = String.valueOf(SeqNoGenerator.nextLong());
+        String homeDetail = new StringBuilder(BlankStringCreator.getBlankString()).toString(); // Deep copy value to increase heap for testing
+
+        cache.put(homestayId, homeDetail);
+        log.info("Cached homestay id: {}", homestayId);
+
+        return homestayId;
+    }
 
     public Homestay getHomestayById(Long id) {
         var homestay = repository.findById(id).orElse(null);

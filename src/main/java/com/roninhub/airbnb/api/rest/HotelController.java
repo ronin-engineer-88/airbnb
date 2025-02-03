@@ -7,16 +7,22 @@ import com.roninhub.airbnb.domain.homestay.entity.Homestay;
 import com.roninhub.airbnb.domain.homestay.service.HomestayService;
 import com.roninhub.airbnb.infrastructure.util.DateUtil;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1/homestays")
 @RequiredArgsConstructor
+@Slf4j
 public class HotelController {
 
     private final HomestayService service;
     private final ResponseFactory responseFactory;
 
+    @GetMapping("/leaky")
+    public String triggerLeak() {
+        return service.getAndCacheHomestay();
+    }
 
     @GetMapping("/{id}")
     public Homestay getHomestayById(@PathVariable Long id) {
